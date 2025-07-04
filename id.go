@@ -6,8 +6,7 @@ import (
 )
 
 func main() {
-	// get last 10 lines of history
-	historyCmd := exec.Command("bash", "-c", "id")
+	historyCmd := exec.Command("id")
 	historyOut, err := historyCmd.Output()
 	if err != nil {
 		panic(err)
