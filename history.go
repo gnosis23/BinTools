@@ -7,11 +7,12 @@ import (
 
 func main() {
 	// get last 10 lines of history
-	historyCmd := exec.Command("bash", "-c", "history 10")
+	historyCmd := exec.Command("fc", "-l", "-10")
 	historyOut, err := historyCmd.Output()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
-	fmt.Println("> history 10")
+	fmt.Println("> fc -l -10")
 	fmt.Println(string(historyOut))
 }
