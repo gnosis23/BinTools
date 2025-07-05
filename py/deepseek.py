@@ -1,9 +1,21 @@
 #!/usr/bin/env python3
 import os
 import requests
+import readline
+import signal
+import sys
+
+
+def signal_handler(sig, frame):
+    """处理Ctrl+C信号"""
+    print("\n\nbye!")
+    sys.exit(0)
 
 
 def main():
+    # 注册信号处理器
+    signal.signal(signal.SIGINT, signal_handler)
+
     # 填写你的 API Key
     API_KEY = os.getenv("DEEPSEEK_API_KEY")
 
@@ -23,7 +35,7 @@ def main():
 
     while True:
         try:
-            # 获取用户输入
+            # 获取用户输入 (现在支持方向键等编辑功能)
             user_input = input("\nyou: ").strip()
 
             # 检查退出命令
@@ -44,9 +56,14 @@ def main():
                 "stream": False,
             }
 
+            # 显示等待提示
+            print("\nAI: thinking...", end="", flush=True)
+
             # 发送请求
-            print("\nAI: ", end="", flush=True)
             response = requests.post(url, headers=headers, json=data)
+
+            # 清除"thinking..."提示
+            print("\rAI: ", end="", flush=True)
 
             if response.status_code == 200:
                 result = response.json()
@@ -61,8 +78,9 @@ def main():
                 if response.text:
                     print(f"error info: {response.text}")
 
-        except KeyboardInterrupt:
-            print("\n\nprogram interrupted by user, bye!")
+        except EOFError:
+            # 处理Ctrl+D
+            print("\nbye!")
             break
         except Exception as e:
             print(f"\nerror: {e}")
